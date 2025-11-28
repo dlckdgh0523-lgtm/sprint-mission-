@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sprint3 Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <style>
+      .fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      body::-webkit-scrollbar {
+        display: none;
+      }
+      .prose img {
+        max-width: 100%;
+        border-radius: 12px;
+        margin: 20px auto;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      .prose p {
+        margin-bottom: 10px;
+        line-height: 1.6;
+      }
+      .ql-editor {
+        min-height: 350px;
+        font-size: 16px;
+      }
+      .ql-editor img {
+        max-width: 80%;
+        border-radius: 8px;
+        margin: 15px auto;
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 font-sans text-slate-800">
+    <nav
+      class="bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 h-20 shadow-sm"
+    >
+      <div
+        class="container mx-auto px-6 h-full flex justify-between items-center"
+      >
+        <a
+          href="#"
+          onclick="location.reload()"
+          class="flex items-center gap-2 group"
+        >
+          <div
+            class="w-10 h-10 bg-gradient-to-tr from-pink-500 to-rose-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-pink-200 group-hover:rotate-12 transition-transform duration-300"
+          >
+            <i class="fa-solid fa-cube text-xl"></i>
+          </div>
+          <span class="text-2xl font-bold tracking-tight text-slate-800"
+            >Sprint<span class="text-pink-500">3</span></span
+          >
+        </a>
+        <div class="hidden md:flex gap-8">
+          <button
+            onclick="loadPage('home')"
+            class="font-bold text-slate-500 hover:text-pink-500 transition-colors"
+          >
+            홈
+          </button>
+          <button
+            onclick="loadPage('market')"
+            class="font-bold text-slate-500 hover:text-pink-500 transition-colors"
+          >
+            중고장터
+          </button>
+          <button
+            onclick="loadPage('board')"
+            class="font-bold text-slate-500 hover:text-pink-500 transition-colors"
+          >
+            자유게시판
+          </button>
+        </div>
+        <div class="flex items-center gap-4">
+          <button
+            onclick="openWriteModal()"
+            class="bg-slate-900 hover:bg-pink-600 text-white px-5 py-2.5 rounded-full font-bold text-sm shadow-lg shadow-gray-300 hover:shadow-pink-200 transition-all active:scale-95 flex items-center gap-2"
+          >
+            <i class="fa-solid fa-pen"></i> 글쓰기
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-8 min-h-[80vh]">
+      <div id="list-view" class="block"></div>
+      <div id="detail-view" class="hidden fade-in">
+        <button
+          onclick="backToList()"
+          class="mb-6 flex items-center gap-2 text-slate-500 hover:text-pink-600 font-bold transition"
+        >
+          <i class="fa-solid fa-arrow-left"></i> 목록으로 돌아가기
+        </button>
+        <div
+          class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden"
+        >
+          <div class="p-8 border-b border-gray-100 bg-gray-50/50">
+            <div class="flex justify-between items-start">
+              <div>
+                <span
+                  id="detail-badge"
+                  class="text-xs font-bold px-2 py-1 rounded bg-gray-200 text-gray-600 mb-2 inline-block"
+                  >카테고리</span
+                >
+                <h1
+                  id="detail-title"
+                  class="text-3xl font-black text-slate-900 mb-2"
+                >
+                  제목
+                </h1>
+                <div class="flex items-center gap-4 text-sm text-gray-400">
+                  <span id="detail-date">날짜</span><span>•</span
+                  ><span id="detail-views">조회수</span>
+                </div>
+              </div>
+              <div id="detail-price-box" class="hidden text-right">
+                <p class="text-sm text-gray-400">판매가</p>
+                <p id="detail-price" class="text-3xl font-black text-pink-500">
+                  0원
+                </p>
+              </div>
+            </div>
+            <div id="detail-tags" class="flex gap-2 mt-4"></div>
+          </div>
+          <div class="p-10 min-h-[300px]">
+            <div
+              id="detail-content"
+              class="prose max-w-none text-gray-700 text-lg"
+            ></div>
+          </div>
+          <div
+            class="px-10 py-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-3"
+          >
+            <button
+              id="btn-delete"
+              class="px-4 py-2 rounded-lg text-red-500 hover:bg-red-50 font-bold transition"
+            >
+              <i class="fa-solid fa-trash-can mr-2"></i>삭제하기
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-8 max-w-3xl mx-auto">
+          <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+            <i class="fa-regular fa-comments"></i> 댓글
+          </h3>
+
+          <form
+            id="comment-form"
+            class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex gap-2 items-center mb-6"
+          >
+            <div class="relative">
+              <input
+                type="file"
+                id="comment-file"
+                class="hidden"
+                accept="image/*"
+              />
+              <label
+                for="comment-file"
+                class="w-10 h-10 rounded-full bg-gray-100 hover:bg-pink-100 hover:text-pink-500 flex items-center justify-center text-gray-500 cursor-pointer transition"
+              >
+                <i class="fa-solid fa-camera"></i>
+              </label>
+              <div
+                id="comment-file-dot"
+                class="hidden absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"
+              ></div>
+            </div>
+
+            <input
+              type="text"
+              id="comment-input"
+              class="flex-1 bg-gray-50 border border-transparent focus:bg-white focus:border-pink-300 rounded-xl px-4 py-2.5 outline-none transition"
+              placeholder="댓글을 입력하세요..."
+              autocomplete="off"
+            />
+            <button
+              type="submit"
+              class="bg-slate-900 text-white w-12 h-12 rounded-xl flex items-center justify-center hover:bg-pink-600 transition shadow-lg"
+            >
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </form>
+
+          <div id="comment-list" class="space-y-3"></div>
+        </div>
+      </div>
+    </main>
+
+    <div
+      id="write-modal"
+      class="fixed inset-0 bg-black/40 z-[100] hidden flex justify-center items-center backdrop-blur-sm transition-opacity"
+    >
+      <div
+        class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl p-8 transform scale-95 transition-transform duration-300 max-h-[95vh] overflow-y-auto"
+      >
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold text-slate-800">게시물 작성</h3>
+          <button
+            onclick="closeWriteModal()"
+            class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="flex bg-gray-100 p-1.5 rounded-xl mb-6">
+          <button
+            onclick="setWriteMode('market')"
+            id="tab-write-market"
+            class="flex-1 py-2.5 text-sm font-bold rounded-lg bg-white shadow-sm text-pink-600 transition-all"
+          >
+            🛍️ 상품 등록
+          </button>
+          <button
+            onclick="setWriteMode('board')"
+            id="tab-write-board"
+            class="flex-1 py-2.5 text-sm font-bold rounded-lg text-gray-500 hover:text-gray-700 transition-all"
+          >
+            📝 자유게시판
+          </button>
+        </div>
+        <form id="unified-form" class="space-y-4">
+          <input
+            type="text"
+            id="inp-title"
+            class="w-full p-4 bg-gray-50 border rounded-2xl outline-none font-bold text-lg"
+            placeholder="제목"
+            required
+          />
+          <div id="market-fields" class="space-y-4">
+            <div class="flex gap-4">
+              <input
+                type="number"
+                id="inp-price"
+                class="flex-1 p-3 bg-gray-50 border rounded-xl outline-none"
+                placeholder="가격"
+              />
+              <input
+                type="text"
+                id="inp-tags"
+                class="flex-1 p-3 bg-gray-50 border rounded-xl outline-none"
+                placeholder="#태그"
+              />
+            </div>
+            <label
+              class="block w-full p-3 border border-dashed border-gray-300 rounded-xl text-center text-gray-500 cursor-pointer hover:bg-gray-50 hover:border-pink-300 transition"
+              ><i class="fa-solid fa-camera mr-2"></i> 대표 이미지 업로드
+              <input
+                type="file"
+                id="inp-market-file"
+                class="hidden"
+                accept="image/*"
+            /></label>
+            <textarea
+              id="inp-content-market"
+              rows="5"
+              class="w-full p-3 bg-gray-50 border rounded-xl outline-none resize-none"
+              placeholder="설명"
+            ></textarea>
+          </div>
+          <div id="board-fields" class="hidden">
+            <div id="editor-container" class="bg-white"></div>
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold py-3.5 rounded-xl shadow-lg mt-4"
+          >
+            등록 완료
+          </button>
+        </form>
+      </div>
+    </div>
+    <input type="file" id="quill-image-input" class="hidden" accept="image/*" />
+
+    <script>
+      const API = "";
+      let currentMode = "market";
+      let lastPage = "home";
+      let currentDetailId = null;
+      let currentDetailType = null;
+      let quill;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadPage("home");
+        initQuill();
+
+        // 댓글 사진 선택 시 빨간 점 표시
+        document
+          .getElementById("comment-file")
+          .addEventListener("change", function () {
+            const dot = document.getElementById("comment-file-dot");
+            if (this.files.length > 0) dot.classList.remove("hidden");
+            else dot.classList.add("hidden");
+          });
+      });
+
+      // --- 상세 페이지 ---
+      async function openDetail(type, id) {
+        currentDetailType = type;
+        currentDetailId = id;
+        document.getElementById("list-view").classList.add("hidden");
+        document.getElementById("detail-view").classList.remove("hidden");
+        window.scrollTo(0, 0);
+
+        try {
+          const res = await fetch(`${API}/${type}/${id}`);
+          const data = await res.json();
+          const isMarket = type === "products";
+
+          document.getElementById("detail-badge").innerText = isMarket
+            ? "중고장터"
+            : "자유게시판";
+          document.getElementById("detail-badge").className =
+            `text-xs font-bold px-2 py-1 rounded mb-2 inline-block ${isMarket ? "bg-pink-100 text-pink-600" : "bg-blue-100 text-blue-600"}`;
+          document.getElementById("detail-title").innerText = isMarket
+            ? data.last_name
+            : data.title;
+          document.getElementById("detail-date").innerText = new Date(
+            data.created_at
+          ).toLocaleString();
+          document.getElementById("detail-views").innerText =
+            `조회 ${data.viewCount}`;
+
+          const priceBox = document.getElementById("detail-price-box");
+          const tagsDiv = document.getElementById("detail-tags");
+
+          if (isMarket) {
+            priceBox.classList.remove("hidden");
+            document.getElementById("detail-price").innerText =
+              `${data.price.toLocaleString()}원`;
+            tagsDiv.innerHTML = data.tags
+              .map(
+                (t) =>
+                  `<span class="bg-gray-100 px-2 py-1 rounded text-xs text-gray-500">#${t}</span>`
+              )
+              .join("");
+          } else {
+            priceBox.classList.add("hidden");
+            tagsDiv.innerHTML = "";
+          }
+
+          const contentDiv = document.getElementById("detail-content");
+          if (isMarket && data.image) {
+            contentDiv.innerHTML = `<img src="${data.image}" class="w-full h-80 object-cover rounded-xl mb-6"> <p>${data.description}</p>`;
+          } else {
+            contentDiv.innerHTML = isMarket ? data.description : data.content;
+          }
+          document.getElementById("btn-delete").onclick = () =>
+            deleteItem(type, id);
+          fetchComments();
+        } catch (e) {
+          console.error(e);
+          backToList();
+        }
+      }
+
+      // --- 댓글 기능 (사진 업로드 포함) ---
+      async function fetchComments() {
+        const list = document.getElementById("comment-list");
+        list.innerHTML =
+          '<div class="text-center text-gray-400 py-4">로딩중...</div>';
+        try {
+          const res = await fetch(
+            `${API}/comments/${currentDetailType}/${currentDetailId}`
+          );
+          const { data } = await res.json();
+          if (data.length === 0) {
+            list.innerHTML =
+              '<div class="text-center text-gray-300 py-4">첫 댓글을 남겨보세요!</div>';
+            return;
+          }
+          list.innerHTML = data
+            .map(
+              (c) => `
+                    <div class="bg-gray-50 p-4 rounded-xl flex gap-3 border border-gray-100">
+                        <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-500 font-bold text-xs flex-shrink-0">U</div>
+                        <div class="flex-1">
+                            <p class="text-sm text-slate-800">${c.content}</p>
+                            ${c.image ? `<img src="${API}/${c.image}" class="mt-2 rounded-lg max-w-[200px] border border-slate-200 cursor-pointer" onclick="window.open(this.src)">` : ""}
+                            <span class="text-[10px] text-gray-400 mt-1 block">${new Date(c.created_at).toLocaleString()}</span>
+                        </div>
+                    </div>`
+            )
+            .join("");
+        } catch (e) {
+          list.innerHTML = "로딩 실패";
+        }
+      }
+
+      document
+        .getElementById("comment-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const input = document.getElementById("comment-input");
+          const fileInput = document.getElementById("comment-file");
+
+          // FormData 사용 (파일 전송용)
+          const formData = new FormData();
+          formData.append("content", input.value);
+          if (fileInput.files[0]) formData.append("image", fileInput.files[0]);
+
+          try {
+            const res = await fetch(
+              `${API}/comments/${currentDetailType}/${currentDetailId}`,
+              {
+                method: "POST",
+                body: formData, // JSON 아님!
+              }
+            );
+            if (res.ok) {
+              input.value = "";
+              fileInput.value = "";
+              document
+                .getElementById("comment-file-dot")
+                .classList.add("hidden");
+              fetchComments();
+            } else alert("실패!");
+          } catch (e) {
+            console.error(e);
+          }
+        });
+
+      // --- 공통 기능 ---
+      function backToList() {
+        document.getElementById("detail-view").classList.add("hidden");
+        document.getElementById("list-view").classList.remove("hidden");
+        loadPage(lastPage);
+      }
+      async function deleteItem(type, id) {
+        if (!confirm("삭제하시겠습니까?")) return;
+        await fetch(`${API}/${type}/${id}`, { method: "DELETE" });
+        backToList();
+      }
+
+      async function loadPage(page) {
+        lastPage = page;
+        document.getElementById("detail-view").classList.add("hidden");
+        document.getElementById("list-view").classList.remove("hidden");
+        const container = document.getElementById("list-view");
+
+        if (page === "home") {
+          container.innerHTML = `<div class="text-center py-20 fade-in"><h2 class="text-4xl font-bold mb-4">환영합니다! 👋</h2><p class="text-gray-500">상단 메뉴를 이용해주세요.</p></div>`;
+        } else if (page === "market") {
+          const res = await fetch(`${API}/products`);
+          const data = await res.json();
+          container.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 fade-in">${data
+            .map(
+              (p) => `
+                    <div onclick="openDetail('products', ${p.id})" class="bg-white rounded-2xl shadow-sm border p-4 relative group hover:-translate-y-1 transition cursor-pointer">
+                        <img src="${p.image ? p.image : `https://picsum.photos/seed/${p.id}/400/300`}" class="w-full h-40 object-cover rounded-xl mb-4 bg-gray-100">
+                        <h3 class="font-bold text-lg truncate">${p.last_name}</h3>
+                        <p class="text-pink-500 font-bold">${p.price.toLocaleString()}원</p>
+                    </div>`
+            )
+            .join("")}</div>`;
+        } else if (page === "board") {
+          const res = await fetch(`${API}/articles`);
+          const data = await res.json();
+          container.innerHTML = `<div class="max-w-3xl mx-auto space-y-6 fade-in">${data
+            .map(
+              (a) => `
+                    <div onclick="openDetail('articles', ${a.id})" class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition cursor-pointer group">
+                        <h3 class="text-2xl font-bold text-slate-800 mb-2 group-hover:text-pink-500 transition">${a.title}</h3>
+                        <div class="text-gray-500 line-clamp-2 text-sm">${a.content.replace(/<[^>]*>?/gm, "")}</div>
+                        <div class="text-xs text-gray-400 pt-4 mt-4 border-t border-gray-50 flex justify-between"><span>${new Date(a.created_at).toLocaleDateString()}</span><span>조회 ${a.viewCount}</span></div>
+                    </div>`
+            )
+            .join("")}</div>`;
+        }
+      }
+
+      // Quill & 글쓰기 관련 (기존 유지)
+      function initQuill() {
+        quill = new Quill("#editor-container", {
+          theme: "snow",
+          placeholder: "내용을 작성하세요...",
+          modules: {
+            toolbar: {
+              container: [
+                [{ header: [1, 2, false] }],
+                ["bold", "italic", "underline"],
+                ["image"],
+              ],
+              handlers: { image: imageHandler },
+            },
+          },
+        });
+      }
+      function imageHandler() {
+        const input = document.getElementById("quill-image-input");
+        input.click();
+        input.onchange = async () => {
+          const file = input.files[0];
+          if (!file) return;
+          const formData = new FormData();
+          formData.append("image", file);
+          try {
+            const res = await fetch(`${API}/articles/upload`, {
+              method: "POST",
+              body: formData,
+            });
+            const data = await res.json();
+            const range = quill.getSelection();
+            quill.insertEmbed(range.index, "image", data.url);
+          } catch (e) {
+            alert("업로드 실패");
+          }
+        };
+      }
+      document
+        .getElementById("unified-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const title = document.getElementById("inp-title").value;
+          if (currentMode === "market") {
+            const formData = new FormData();
+            formData.append("last_name", title);
+            formData.append(
+              "description",
+              document.getElementById("inp-content-market").value
+            );
+            formData.append(
+              "price",
+              document.getElementById("inp-price").value
+            );
+            formData.append("tags", document.getElementById("inp-tags").value);
+            if (document.getElementById("inp-market-file").files[0])
+              formData.append(
+                "image",
+                document.getElementById("inp-market-file").files[0]
+              );
+            await sendData(`${API}/products`, "POST", formData, true);
+          } else {
+            const content = quill.root.innerHTML;
+            await sendData(
+              `${API}/articles`,
+              "POST",
+              JSON.stringify({ title, content }),
+              false
+            );
+          }
+        });
+      async function sendData(url, method, body, isFile) {
+        const options = { method, body };
+        if (!isFile) options.headers = { "Content-Type": "application/json" };
+        const res = await fetch(url, options);
+        if (res.ok) {
+          closeWriteModal();
+          document.getElementById("unified-form").reset();
+          quill.setContents([]);
+          loadPage(currentMode);
+          alert("등록 완료!");
+        }
+      }
+      function openWriteModal() {
+        document.getElementById("write-modal").classList.remove("hidden");
+      }
+      function closeWriteModal() {
+        document.getElementById("write-modal").classList.add("hidden");
+      }
+      function setWriteMode(mode) {
+        currentMode = mode;
+        if (mode === "market") {
+          document.getElementById("market-fields").classList.remove("hidden");
+          document.getElementById("board-fields").classList.add("hidden");
+        } else {
+          document.getElementById("market-fields").classList.add("hidden");
+          document.getElementById("board-fields").classList.remove("hidden");
+        }
+      }
+      document.getElementById("write-modal").addEventListener("click", (e) => {
+        if (e.target.id === "write-modal") closeWriteModal();
+      });
+    </script>
+  </body>
+</html>

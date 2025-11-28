@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- 중고마켓 ---
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  last_name   String?  @db.VarChar(255)
+  description String?
+  price       Int
+  tags        String[] @default([])
+  
+  // 🔥 [수정 1] image 필드 추가 (String? = 없어도 됨)
+  image       String?  
+  
+  viewCount   Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+  
+  comments    ProductComment[]
+}
+
+model ProductComment {
+  id         Int      @id @default(autoincrement())
+  content    String
+  image      String?  
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  
+  product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id Int
+}
+
+// --- 자유게시판 ---
+
+model Article {
+  id          Int      @id @default(autoincrement())
+  title       String
+  content     String   // 여기에 HTML 코드가 들어감
+  
+  // 🔥 [수정 2] body를 필수(String)에서 선택(String?)으로 변경!
+  // 이제 body를 안 보내도 에러가 안 납니다.
+  body        String?  
+  
+  // 🔥 [수정 3] image 필드 추가
+  image       String?
+
+  published   Boolean  @default(false)
+  viewCount   Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  comments    ArticleComment[]
+}
+
+model ArticleComment {
+  id          Int      @id @default(autoincrement())
+  content     String
+  image       String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  article     Article  @relation(fields: [article_id], references: [id], onDelete: Cascade)
+  article_id  Int
+}
