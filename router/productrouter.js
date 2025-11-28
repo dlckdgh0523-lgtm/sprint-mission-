@@ -6,7 +6,6 @@ import path from "path";
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// 1. 이미지 저장소 설정 (Multer)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => {
@@ -21,15 +20,12 @@ const wrap = (handler) => async (req, res, next) => {
   try {
     await handler(req, res, next);
   } catch (e) {
-    console.error(`❌ Product Error: [${req.method}] ${req.originalUrl}`);
-    console.error(e); // 터미널에 에러 자세히 찍힘
+    console.error(`❌fuck Product Error: [${req.method}] ${req.originalUrl}`);
+    console.error(e);
     res.status(500).send({ message: "Server Error" });
   }
 };
 
-// ==========================================
-// [1] 상품 목록 조회
-// ==========================================
 router.get(
   "/",
   wrap(async (req, res) => {
@@ -54,28 +50,17 @@ router.get(
   })
 );
 
-// ==========================================
-// 🔥 [2] 상품 등록 (여기가 중요!)
-// upload.single("image")가 있어야 FormData(사진+글)를 받습니다.
-// ==========================================
 router.post(
   "/",
   upload.single("image"),
   wrap(async (req, res) => {
-    // 1. FormData로 들어온 데이터 꺼내기
     const { last_name, description, price, tags } = req.body;
 
-    // 2. 필수 값 체크
     if (!last_name || !price) {
       return res.status(400).send({ message: "상품명과 가격은 필수입니다." });
     }
 
-    // 3. 이미지 경로 처리 (파일 없으면 null)
-    // 윈도우 역슬래시(\)를 슬래시(/)로 변경
     const imagePath = req.file ? req.file.path.replace(/\\/g, "/") : null;
-
-    // 4. 데이터 변환 (문자열 -> 숫자/배열)
-    // FormData는 모든 걸 '문자열'로 보내기 때문에 숫자로 바꿔줘야 합니다.
     const priceInt = Number(price);
     const tagArray = tags
       ? tags
@@ -84,21 +69,19 @@ router.post(
           .filter((t) => t)
       : [];
 
-    // 5. DB 저장
     const newProduct = await prisma.product.create({
       data: {
         last_name,
         description,
-        price: priceInt, // 숫자로 변환된 가격
-        tags: tagArray, // 배열로 변환된 태그
-        image: imagePath, // 이미지 경로
+        price: priceInt,
+        tags: tagArray,
+        image: imagePath,
       },
     });
     res.status(201).send(newProduct);
   })
 );
 
-// [3] 상세 조회
 router.get(
   "/:id",
   wrap(async (req, res) => {
@@ -115,7 +98,7 @@ router.patch(
   "/:id",
   wrap(async (req, res) => {
     const { id } = req.params;
-    // 수정할 때도 가격이 오면 숫자로 바꿔줘야 함
+
     if (req.body.price) req.body.price = Number(req.body.price);
 
     const product = await prisma.product.update({
@@ -126,7 +109,6 @@ router.patch(
   })
 );
 
-// [5] 삭제
 router.delete(
   "/:id",
   wrap(async (req, res) => {

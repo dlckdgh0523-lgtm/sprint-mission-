@@ -57,7 +57,7 @@ router.get(
           { content: { contains: search, mode: "insensitive" } },
         ],
       },
-      // 🔥 [수정됨] created_at -> createdAt
+
       orderBy: { createdAt: "desc" },
       skip,
       take: Number(pageSize),

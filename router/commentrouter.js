@@ -24,8 +24,6 @@ const wrap = (handler) => async (req, res, next) => {
     res.status(500).send({ message: "Server Error" });
   }
 };
-
-// [1] 상품 댓글 등록
 router.post(
   "/products/:productId",
   upload.single("image"),
@@ -47,8 +45,6 @@ router.post(
     res.status(201).send(comment);
   })
 );
-
-// [2] 상품 댓글 조회
 router.get(
   "/products/:productId",
   wrap(async (req, res) => {
@@ -58,7 +54,6 @@ router.get(
     let options = {
       where: { product_id: Number(productId) },
       take: Number(limit),
-      // 🔥 [수정됨] created_at -> createdAt
       orderBy: { createdAt: "desc" },
     };
 
@@ -99,7 +94,6 @@ router.post(
   })
 );
 
-// [4] 게시글 댓글 조회
 router.get(
   "/articles/:articleId",
   wrap(async (req, res) => {
@@ -109,7 +103,6 @@ router.get(
     let options = {
       where: { article_id: Number(articleId) },
       take: Number(limit),
-      // 🔥 [수정됨] created_at -> createdAt
       orderBy: { createdAt: "desc" },
     };
 
