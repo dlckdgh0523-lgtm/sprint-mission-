@@ -45,13 +45,6 @@
         margin: 15px auto;
         display: block;
       }
-
-      /* 🔥 텍스트 그라데이션 & 배경 애니메이션 */
-      .text-gradient {
-        background: linear-gradient(to right, #ec4899, #8b5cf6, #3b82f6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
       .bg-grid-pattern {
         background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
         background-size: 20px 20px;
@@ -355,7 +348,9 @@
     />
 
     <script>
-      const API = "http://localhost:3000"; // ★ 여기에 백엔드 주소 입력 필수 (예: http://localhost:8080)
+      // ★ API 변수 수정됨: 빈 값("")으로 두면 현재 도메인을 따라갑니다.
+      // 만약 특정 주소(예: http://localhost:8080)가 필요하면 그 주소를 넣으세요.
+      const API = "";
       let currentMode = "market";
       let lastPage = "home";
       let currentDetailId = null;
@@ -381,62 +376,63 @@
         if (container) container.classList.remove("hidden");
 
         const mainContent = document.getElementById("content-area");
-        mainContent.innerHTML = ""; // 화면 초기화
+        mainContent.innerHTML = "";
 
         // ==============================================
-        // 🏠 [홈 화면] 버튼 3개 색상 적용 완료!
+        // 🏠 [홈 화면] 원래 크기로 복구 + 색상 포인트 적용
         // ==============================================
         if (page === "home") {
           mainContent.innerHTML = `
-                    <div class="relative bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100 fade-in group">
-                        <div class="absolute inset-0 bg-grid-pattern opacity-40"></div>
-                        
+                    <div class="relative bg-white rounded-[2rem] shadow-xl overflow-hidden border border-slate-100 fade-in">
+                        <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
+                        <div class="absolute -top-24 -right-24 w-64 h-64 bg-pink-100 rounded-full blur-3xl opacity-50"></div>
+                        <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
+
                         <div class="relative z-10 text-center py-20 px-6">
-                            <span class="inline-block py-1.5 px-4 rounded-full bg-slate-100 text-slate-500 text-xs font-bold mb-6 tracking-widest uppercase">
-                                Hoya Platform
-                            </span>
-                            <h2 class="text-5xl sm:text-7xl font-black mb-10 text-slate-900 tracking-tight leading-tight">
-                                무엇을 <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-600">할까요?</span>
+                            <span class="inline-block py-1 px-3 rounded-full bg-slate-100 text-slate-500 text-xs font-bold mb-6 tracking-wide">PORTFOLIO & COMMUNITY</span>
+                            <h2 class="text-5xl sm:text-7xl font-black mb-6 text-slate-900 tracking-tight leading-tight">
+                                Hoya의 <br class="sm:hidden">
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 animate-pulse">개발 놀이터</span>
                             </h2>
-    
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                                
-                                <button onclick="loadPage('market')" class="group relative overflow-hidden rounded-3xl bg-slate-900 text-white p-8 text-left shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-                                    <div class="absolute top-0 right-0 w-32 h-32 bg-pink-500 rounded-full blur-[50px] opacity-20 group-hover:opacity-40 transition"></div>
-                                    <i class="fa-solid fa-code text-4xl mb-4 text-pink-400"></i>
-                                    <h3 class="text-2xl font-bold mb-2">개발 포트폴리오</h3>
-                                    <p class="text-slate-400 text-sm font-medium">내 프로젝트 전시하기</p>
+                            <p class="text-lg sm:text-xl text-slate-500 mb-10 max-w-2xl mx-auto leading-relaxed">
+                                내가 만든 프로젝트를 전시하고, <br class="hidden sm:block">사람들과 자유롭게 소통하는 공간입니다.
+                            </p>
+                            
+                            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                                <button onclick="loadPage('market')" class="group relative px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                                    <div class="absolute inset-0 bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    <span class="relative flex items-center gap-2">
+                                        <i class="fa-solid fa-code"></i> 개발 구경하기
+                                    </span>
                                 </button>
-    
-                                <button onclick="loadPage('game')" class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white p-8 text-left shadow-lg hover:shadow-violet-200 hover:-translate-y-2 transition-all duration-300">
-                                    <div class="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-[50px] opacity-20 group-hover:opacity-30 transition"></div>
-                                    <i class="fa-solid fa-gamepad text-4xl mb-4 text-violet-200"></i>
-                                    <h3 class="text-2xl font-bold mb-2">미니 게임</h3>
-                                    <p class="text-violet-100 text-sm font-medium">머리 식히는 시간</p>
+
+                                <button onclick="loadPage('game')" class="px-8 py-4 bg-white border border-slate-200 text-slate-700 rounded-2xl font-bold hover:border-purple-300 hover:text-purple-600 hover:bg-purple-50 transition shadow-sm hover:shadow-md flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-gamepad text-purple-500"></i> 미니 게임
                                 </button>
                                 
-                                <button onclick="loadPage('board')" class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white p-8 text-left shadow-lg hover:shadow-blue-200 hover:-translate-y-2 transition-all duration-300">
-                                    <div class="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-[50px] opacity-20 group-hover:opacity-30 transition"></div>
-                                    <i class="fa-regular fa-comments text-4xl mb-4 text-blue-100"></i>
-                                    <h3 class="text-2xl font-bold mb-2">자유게시판</h3>
-                                    <p class="text-blue-100 text-sm font-medium">자유로운 소통 공간</p>
+                                <button onclick="loadPage('board')" class="px-8 py-4 bg-white border border-slate-200 text-slate-700 rounded-2xl font-bold hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition shadow-sm hover:shadow-md flex items-center justify-center gap-2">
+                                    <i class="fa-regular fa-comments text-blue-500"></i> 자유게시판
                                 </button>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 fade-in">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 fade-in" style="animation-delay: 0.1s;">
                         <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center">
-                            <p class="text-3xl font-black text-slate-900">12+</p><p class="text-xs text-slate-400 font-bold mt-1">PROJECTS</p>
+                            <p class="text-3xl font-black text-slate-900">12+</p>
+                            <p class="text-xs text-slate-400 font-bold mt-1">PROJECTS</p>
                         </div>
                         <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center">
-                            <p class="text-3xl font-black text-slate-900">50+</p><p class="text-xs text-slate-400 font-bold mt-1">POSTS</p>
+                            <p class="text-3xl font-black text-slate-900">50+</p>
+                            <p class="text-xs text-slate-400 font-bold mt-1">POSTS</p>
                         </div>
                         <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center">
-                            <p class="text-3xl font-black text-slate-900">3</p><p class="text-xs text-slate-400 font-bold mt-1">GAMES</p>
+                            <p class="text-3xl font-black text-slate-900">3</p>
+                            <p class="text-xs text-slate-400 font-bold mt-1">GAMES</p>
                         </div>
                         <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center">
-                            <p class="text-3xl font-black text-slate-900">∞</p><p class="text-xs text-slate-400 font-bold mt-1">FUN</p>
+                            <p class="text-3xl font-black text-slate-900">∞</p>
+                            <p class="text-xs text-slate-400 font-bold mt-1">FUN</p>
                         </div>
                     </div>
                 `;
@@ -451,30 +447,21 @@
             const rawData = await res.json();
             const list = Array.isArray(rawData) ? rawData : rawData.data || [];
 
-            mainContent.innerHTML = `
-                        <h2 class="text-2xl font-bold mb-6 text-slate-800 fade-in flex items-center">
-                            <span class="w-2 h-8 bg-pink-500 rounded-full mr-3"></span>개발 포트폴리오
-                        </h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 fade-in">
-                            ${list
-                              .map(
-                                (p) => `
-                            <div onclick="openDetail('products', ${p.id})" class="bg-white rounded-3xl shadow-sm border border-slate-100 p-4 relative group hover:-translate-y-1 transition cursor-pointer overflow-hidden hover:shadow-xl duration-300">
-                                <div class="relative overflow-hidden rounded-2xl mb-4 bg-gray-100 h-48">
-                                    <img src="${p.image ? p.image : `https://picsum.photos/seed/${p.id}/400/300`}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
-                                </div>
-                                <h3 class="font-bold text-lg truncate text-slate-800 px-1">${p.last_name}</h3>
-                                <div class="flex justify-between items-center mt-2 px-1">
-                                    <p class="text-pink-500 font-black text-lg">${p.price.toLocaleString()} P</p>
-                                    <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">More <i class="fa-solid fa-arrow-right ml-1"></i></span>
-                                </div>
-                            </div>`
-                              )
-                              .join("")}
-                        </div>`;
+            mainContent.innerHTML = `<h2 class="text-2xl font-bold mb-6 text-slate-800 fade-in"><i class="fa-solid fa-code text-pink-500 mr-2"></i>개발 포트폴리오</h2><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 fade-in">${list
+              .map(
+                (p) => `
+                        <div onclick="openDetail('products', ${p.id})" class="bg-white rounded-3xl shadow-sm border border-slate-100 p-4 relative group hover:-translate-y-1 transition cursor-pointer overflow-hidden">
+                            <div class="relative overflow-hidden rounded-2xl mb-4 bg-gray-100 h-48">
+                                <img src="${p.image ? p.image : `https://picsum.photos/seed/${p.id}/400/300`}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            </div>
+                            <h3 class="font-bold text-lg truncate text-slate-800">${p.last_name}</h3>
+                            <p class="text-pink-500 font-bold mt-1">${p.price.toLocaleString()} P</p>
+                        </div>`
+              )
+              .join("")}</div>`;
           } catch (e) {
+            mainContent.innerHTML = `<div class="text-center py-10 text-gray-500">데이터 로딩 실패 (API 주소 확인 필요)</div>`;
             console.error(e);
-            mainContent.innerHTML = `<div class="text-center py-20 text-gray-400">데이터를 불러오지 못했습니다.</div>`;
           }
         }
 
@@ -482,85 +469,55 @@
         // 🎮 [게임 페이지]
         // ==============================================
         else if (page === "game") {
-          mainContent.innerHTML = `
-                    <div class="fade-in">
-                        <h2 class="text-2xl font-bold mb-6 text-slate-800 flex items-center">
-                            <span class="w-2 h-8 bg-violet-500 rounded-full mr-3"></span>미니 게임 존
-                        </h2>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div onclick="playGame('snake')" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 hover:border-violet-400 transition cursor-pointer text-center group hover:-translate-y-2 relative overflow-hidden">
-                                <div class="w-20 h-20 bg-violet-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-violet-500 transition duration-300">
-                                    <span class="text-4xl group-hover:scale-110 transition">🐍</span>
-                                </div>
-                                <h3 class="text-xl font-bold text-slate-800">스네이크 게임</h3>
-                                <p class="text-gray-400 mt-2 text-sm">꼬리가 길어지면 죽어요!</p>
-                                <button class="mt-6 px-6 py-2 rounded-full bg-slate-100 text-slate-600 font-bold text-sm group-hover:bg-violet-500 group-hover:text-white transition">PLAY NOW</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="game-screen" class="hidden fixed inset-0 bg-black/95 z-[200] flex flex-col justify-center items-center p-4 backdrop-blur-sm">
-                        <button onclick="closeGame()" class="absolute top-6 right-6 text-white border border-white px-4 py-2 rounded-full hover:bg-white hover:text-black transition font-bold">나가기 X</button>
-                        <iframe id="game-frame" class="w-full max-w-2xl h-[70vh] bg-black border border-gray-700 rounded-2xl shadow-2xl" frameborder="0"></iframe>
-                    </div>`;
+          mainContent.innerHTML = `<div class="fade-in"><h2 class="text-2xl font-bold mb-6 text-slate-800"><i class="fa-solid fa-gamepad text-purple-500 mr-2"></i>미니 게임</h2><div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div onclick="playGame('snake')" class="bg-white p-8 rounded-3xl shadow-lg border hover:border-green-300 transition cursor-pointer text-center group hover:-translate-y-2"><div class="text-6xl mb-4 group-hover:scale-110 transition">🐍</div><h3 class="text-xl font-bold text-slate-800">스네이크</h3><p class="text-gray-400 mt-2 text-sm">Play Now!</p></div></div></div><div id="game-screen" class="hidden fixed inset-0 bg-black/90 z-[200] flex flex-col justify-center items-center p-4"><button onclick="closeGame()" class="absolute top-6 right-6 text-white text-xl font-bold border border-white px-4 py-2 rounded-full hover:bg-white hover:text-black transition">닫기 X</button><iframe id="game-frame" class="w-full max-w-lg h-[600px] bg-black border-4 border-gray-800 rounded-xl" frameborder="0"></iframe></div>`;
         }
 
         // ==============================================
-        // 📝 [자유게시판] (★오류 수정: 게시글 박스 안전 처리★)
+        // 📝 [자유게시판] (게시글 박스 오류 수정됨)
         // ==============================================
         else if (page === "board") {
           try {
             const res = await fetch(`${API}/articles`);
-
-            if (!res.ok) throw new Error("서버 응답 오류");
-
             const rawData = await res.json();
-            // ★ 데이터가 배열이 아니어도 에러 안 나게 빈 배열([]) 처리
-            const data = Array.isArray(rawData) ? rawData : rawData.data || [];
+            const list = Array.isArray(rawData) ? rawData : rawData.data || [];
 
             mainContent.innerHTML = `
-                        <h2 class="text-2xl font-bold mb-6 text-slate-800 fade-in flex items-center">
-                            <span class="w-2 h-8 bg-blue-500 rounded-full mr-3"></span>자유게시판
-                        </h2>
+                        <h2 class="text-2xl font-bold mb-6 text-slate-800 fade-in"><i class="fa-solid fa-comments text-blue-500 mr-2"></i>자유게시판</h2>
                         <div class="grid grid-cols-1 gap-4 max-w-4xl mx-auto fade-in">
-                            ${data.length === 0 ? `<div class="text-center py-20 text-gray-400 bg-white rounded-3xl border border-dashed border-gray-300">아직 작성된 글이 없어요. 📝</div>` : ""}
-                            
-                            ${data
+                            ${list
                               .map((a) => {
-                                // ★ 1. 본문 내용이 없을 경우 대비 (안전 장치)
                                 const safeContent = a.content || "";
-
-                                // ★ 2. 썸네일 이미지 안전하게 추출
                                 const tempDiv = document.createElement("div");
                                 tempDiv.innerHTML = safeContent;
                                 const imgTag = tempDiv.querySelector("img");
                                 const thumbnailUrl =
                                   a.image || (imgTag ? imgTag.src : null);
-
-                                // ★ 3. 본문 텍스트만 깔끔하게 추출
                                 const plainText =
                                   tempDiv.textContent ||
                                   tempDiv.innerText ||
-                                  "내용이 없습니다.";
+                                  "";
 
-                                // ★ 4. 게시글 박스 UI 렌더링
                                 return `
-                                <div onclick="openDetail('articles', ${a.id})" class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all duration-300 cursor-pointer group flex gap-5 h-36">
+                                <div onclick="openDetail('articles', ${a.id})" class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-blue-200 transition cursor-pointer group flex flex-col sm:flex-row gap-6">
                                     ${
                                       thumbnailUrl
                                         ? `
-                                        <div class="w-36 h-full shrink-0 rounded-2xl overflow-hidden bg-gray-100 relative">
-                                            <img src="${thumbnailUrl}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                        <div class="w-full sm:w-48 h-32 shrink-0 rounded-2xl overflow-hidden bg-gray-100">
+                                            <img src="${thumbnailUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                         </div>
                                     `
                                         : ""
                                     }
-                                    <div class="flex-1 flex flex-col justify-center overflow-hidden">
-                                        <h3 class="font-bold text-lg text-slate-800 mb-1 group-hover:text-blue-600 transition truncate">${a.title || "제목 없음"}</h3>
-                                        <p class="text-slate-500 text-sm line-clamp-2 leading-relaxed mb-3">${plainText}</p>
-                                        <div class="flex items-center gap-3 text-xs text-slate-400 font-medium mt-auto">
-                                            <span class="bg-slate-100 px-2 py-1 rounded text-slate-500">${new Date(a.created_at).toLocaleDateString()}</span>
+                                    <div class="flex-1 flex flex-col justify-center">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-1 rounded-full">Community</span>
+                                            <span class="text-slate-400 text-xs">${new Date(a.created_at).toLocaleDateString()}</span>
+                                        </div>
+                                        <h3 class="font-bold text-xl text-slate-800 mb-2 group-hover:text-blue-600 transition line-clamp-1">${a.title}</h3>
+                                        <p class="text-slate-500 text-sm line-clamp-2 leading-relaxed mb-4">${plainText}</p>
+                                        <div class="flex items-center gap-4 text-xs text-slate-400 font-medium">
                                             <span class="flex items-center gap-1"><i class="fa-regular fa-eye"></i> ${a.viewCount || 0}</span>
-                                            <span class="flex items-center gap-1 text-pink-400"><i class="fa-solid fa-heart"></i> ${a.likeCount || 0}</span>
+                                            <span class="flex items-center gap-1 group-hover:text-pink-500 transition"><i class="fa-solid fa-heart"></i> ${a.likeCount || 0}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -569,18 +526,12 @@
                               .join("")}
                         </div>`;
           } catch (e) {
+            mainContent.innerHTML = `<div class="text-center py-10 text-gray-500">게시판 로딩 실패 (API 확인 필요)</div>`;
             console.error(e);
-            mainContent.innerHTML = `
-                        <div class="text-center py-20 text-gray-400 bg-white rounded-3xl border border-dashed border-gray-300">
-                            <i class="fa-solid fa-triangle-exclamation text-4xl mb-3 text-red-300"></i><br>
-                            게시글을 불러오는데 실패했습니다.<br>
-                            <span class="text-xs text-gray-300">API 주소가 올바른지 확인해주세요.</span>
-                        </div>`;
           }
         }
       }
 
-      // ... (이하 로직은 기존과 동일) ...
       async function openDetail(type, id) {
         currentDetailType = type;
         currentDetailId = id;
@@ -605,7 +556,7 @@
             data.created_at
           ).toLocaleString();
           document.getElementById("detail-views").innerText =
-            `조회 ${data.viewCount || 0}`;
+            `조회 ${data.viewCount}`;
           const likeCount = data.likeCount || 0;
           document.getElementById("header-like-count").innerText = likeCount;
           document.getElementById("btn-like-count").innerText = likeCount;
@@ -616,13 +567,11 @@
             document.getElementById("detail-price").innerText =
               `${data.price.toLocaleString()} point`;
             tagsDiv.innerHTML = data.tags
-              ? data.tags
-                  .map(
-                    (t) =>
-                      `<span class="bg-gray-100 px-2 py-1 rounded text-xs text-gray-500">#${t}</span>`
-                  )
-                  .join("")
-              : "";
+              .map(
+                (t) =>
+                  `<span class="bg-gray-100 px-2 py-1 rounded text-xs text-gray-500">#${t}</span>`
+              )
+              .join("");
           } else {
             priceBox.classList.add("hidden");
             tagsDiv.innerHTML = "";
@@ -665,7 +614,7 @@
             )
             .join("");
         } catch (e) {
-          list.innerHTML = "댓글 로딩 실패";
+          list.innerHTML = "로딩 실패";
         }
       }
       async function toggleLike() {
