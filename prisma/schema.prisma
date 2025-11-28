@@ -10,6 +10,7 @@ model Product {
   id          Int      @id @default(autoincrement())
   last_name   String?  @db.VarChar(255)
   description String?
+  likeCount   Int      @default(0)
   price       Int
   tags        String[] @default([])
   
@@ -43,6 +44,7 @@ model Article {
   image       String?
   published   Boolean  @default(false)
   viewCount   Int      @default(0)
+  likeCount   Int      @default(0)
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
 

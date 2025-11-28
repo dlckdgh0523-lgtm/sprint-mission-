@@ -15,7 +15,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// 2. 에러 래퍼 (서버 안 죽게)
 const wrap = (handler) => async (req, res, next) => {
   try {
     await handler(req, res, next);
@@ -42,7 +41,7 @@ router.get(
 
     const products = await prisma.product.findMany({
       where,
-      orderBy: { createdAt: "desc" }, // 최신순
+      orderBy: { createdAt: "desc" },
       skip,
       take: Number(pageSize),
     });
@@ -93,7 +92,6 @@ router.get(
   })
 );
 
-// [4] 수정
 router.patch(
   "/:id",
   wrap(async (req, res) => {
@@ -114,6 +112,16 @@ router.delete(
   wrap(async (req, res) => {
     await prisma.product.delete({ where: { id: Number(req.params.id) } });
     res.status(204).send();
+  })
+);
+router.patch(
+  "/:id/like",
+  wrap(async (req, res) => {
+    const product = await prisma.product.update({
+      where: { id: Number(req.params.id) },
+      data: { likeCount: { increment: 1 } }, // 1 증가
+    });
+    res.send(product); // 업데이트된 정보(좋아요 수 포함) 돌려줌
   })
 );
 

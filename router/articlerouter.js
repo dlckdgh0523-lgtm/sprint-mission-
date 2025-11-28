@@ -85,4 +85,15 @@ router.delete(
   })
 );
 
+router.patch(
+  "/:id/like",
+  wrap(async (req, res) => {
+    const product = await prisma.product.update({
+      where: { id: Number(req.params.id) },
+      data: { likeCount: { increment: 1 } }, // 1 증가
+    });
+    res.send(product); // 업데이트된 정보(좋아요 수 포함) 돌려줌
+  })
+);
+
 export default router;
