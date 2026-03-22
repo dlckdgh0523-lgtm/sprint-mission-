@@ -4,10 +4,10 @@
   "description": "판다마켓 실시간 알림 시스템",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/app.js",
+    "start": "node src/server.js",
+    "postinstall": "prisma generate",
+    "migrate:deploy": "prisma migrate deploy"
   },
   "keywords": [
     "notification",
@@ -19,7 +19,9 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1014.0",
     "express": "^5.2.1",
+    "multer": "^2.1.1",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3"
   },
@@ -29,5 +31,18 @@
     "@types/socket.io": "^3.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
-  }
+  },
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S3UploadReadDeleteForPandaMarket",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::pandamarket-images-changho-2026/*"
+    }
+  ]
 }
